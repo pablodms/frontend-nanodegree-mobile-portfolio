@@ -22,9 +22,45 @@ body {
     font-size: 14px;
     line-height: 1.61;
     font-weight: 400;
-    padding-bottom: 40px;
     min-height: 100%;
+    height: 100%;
 }
+
+.container
+{
+  height: 100%;
+  padding-bottom: 40px;
+}
+
+#new 
+{
+  position: fixed;
+  top: 0px;
+  width: 100%;
+}
+
+#new.experience
+{
+  transform: translateX(100%);
+  transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+#new.experience.animated
+{
+  transform: translateX(0);
+}
+
+#new.courses
+{
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+#new.courses.animated
+{
+  opacity: 1;
+}
+
 body, button, input, select, textarea { font-family: 'Open Sans', arial, sans-serif; color: #333; }
 
 a { color: #12C; }
@@ -38,9 +74,9 @@ ul, ol { margin: 1em 0; padding: 0 0 0 20px; }
 img { border: 0; max-width: 100%; }
 
 header {width: 100%;background-color: rgba(0,0,0,0.7);}
-footer, .container { max-width: 45em; margin: 0 auto; }
+footer, .container {max-width: 45em;margin: 0 auto;}
 
-header {padding: 0;color: #fff;height: 72px;line-height: 72px;}
+header {padding: 0;color: #fff;height: 72px;line-height: 72px;position: absolute;top: 0;z-index: 10;}
 header img { border-radius: 40px; float: left; padding-left: 5px; }
 header p { font-size:1.5em; font-weight: bold; padding-left: 4em;}
 header p span { font-size: 0.8em; font-weight: normal;}
@@ -58,7 +94,7 @@ header p span { font-size: 0.8em; font-weight: normal;}
     font-weight: bold;
     font-size: 40px;
     text-align: center;
-    margin-top: 130px;
+    padding-top: 130px;
     line-height: normal;
 }
 
@@ -76,6 +112,7 @@ footer {
   height: 40px;
   width: 100%;
   line-height: 39px;
+  z-index: 2;
 }
 footer span { float: right; font-style: italic; }
 
@@ -135,13 +172,18 @@ p
       transform: rotateY(180deg);
   }
 
-  body 
+  .container
   {
       background: url('../img/hello-small.jpg') center center fixed;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
       background-size: cover;
+  }
+
+  .container.experience
+  {
+    background: url('../img/adventure-small.jpg') center center fixed;
   }
 
   nav 
@@ -159,7 +201,7 @@ p
 
   nav.expanded
   {
-      height: 215px;
+      height: 217px;
   }
 
   .nav-item
@@ -193,7 +235,7 @@ p
 
 @media only screen and (min-width: 481px) and (max-width: 1023px) {
 
-  body 
+  .container
   {
       background: url('../img/hello-medium.jpg') center center fixed;
       -webkit-background-size: cover;
@@ -253,7 +295,8 @@ p
 }
 
 @media only screen and (min-width: 1024px) {
-  body 
+
+  .container
   {
       background: url('../img/hello-large.jpg') center center fixed;
       -webkit-background-size: cover;
