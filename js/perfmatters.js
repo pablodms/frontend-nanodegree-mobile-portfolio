@@ -1,14 +1,6 @@
 // Measuring the Critical Rendering Path with Navigation Timing
 // https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp
 
-
-(function(w,g){w['GoogleAnalyticsObject']=g;
- w[g]=w[g]||function(){(w[g].q=w[g].q||[]).push(arguments)};w[g].l=1*new Date();})(window,'ga');
-
-// Optional TODO: replace with your Google Analytics profile ID.
-ga('create', 'UA-39582533-4');
-ga('send', 'pageview');
-
 WebFontConfig = {
     custom: {
         families: ['FontAwesome'],
@@ -45,83 +37,176 @@ function logCRP() {
   stats.textContent = 'DCL: ' + dcl + 'ms, onload: ' + complete + 'ms';
 }
 
+var onFirstLoad = {
+  'about': function() {
+    var cleanHello = function() {
+    var letters = this.childNodes;
+    var message = '';
+    for (var i = 0; i < letters.length; i++) {
+      message += letters[i].textContent;
+    }
+    letters[0].parentNode.innerHTML = message;
+  };
+
+  var descriptionNode = document.querySelector(".description");
+  descriptionNode.style.display = 'block';
+  void descriptionNode.offsetWidth;
+  descriptionNode.classList.add('visible');
+
+
+  var hello = document.getElementById('hello');
+  var messageString = hello.innerHTML;
+  hello.innerHTML = '';
+  hello.classList.add('visible');
+  for (var i = 0, len = messageString.length; i < len; i++) {
+    if (messageString[i] === ' ')
+    {
+      hello.innerHTML += ' ';
+    }
+    else 
+    {
+      hello.innerHTML += '<span class="hello-letter" style="animation-delay: '+(i * 200)+'ms">'+messageString[i]+'</span>';
+    }
+  }
+
+  setTimeout(cleanHello.bind(hello), i* 200 + 1000);
+    this.about = null;
+   },
+  'courses': function() {
+    this.courses = null;
+   },
+  'experience': function() {
+    this.experience = null;
+   },
+  'portfolio': function() {
+    this.portfolio = null;
+
+  }
+};
+
+var sections = {};
+
+var onPressHeader = function() {
+  var headerIcon = this.querySelector('#header-toggle');
+  if (headerIcon)
+  {
+     this.querySelector('#header-toggle').classList.toggle('expanded');
+     document.querySelector("nav").classList.toggle('expanded');
+  }
+};
+
+var injectNode = function() {
+    this.classList.remove('old');
+    this.classList.add('new');
+    document.querySelector("body").insertBefore(this, document.querySelector("footer"));
+    void this.offsetWidth;
+    this.classList.add('animated');
+    setTimeout(onNavigated.bind(this), 1200);
+};
+
+var onNavigated = function(event) {
+    // Ignore old animations
+    if (this.classList.contains('old')) {
+      return;
+    }
+
+    var oldElements = document.querySelectorAll('.old');
+    if (oldElements)
+    {
+      for (var i = 0; i < oldElements.length; i++) {
+        oldElements[i].classList.remove('old');
+        sections[oldElements[i].getAttribute('id')] = oldElements[i].parentNode.removeChild(oldElements[i]);
+      }
+    }
+    this.classList.remove('new');
+    this.classList.remove('animated');
+
+    var id = this.getAttribute('id');
+    onFirstLoad[id] && onFirstLoad[id]();
+};
+
+var navigate = function(url, container, preserveState) {
+
+  if (sections[container]) {
+    var containerElements = document.querySelectorAll('.container');
+    if (containerElements) {
+      for (var i = 0; i < containerElements.length; i++) {
+        containerElements[i].classList.add('old');
+      }
+    }
+    injectNode.call(sections[container]);
+    !preserveState && history.pushState({'container': container}, '', url);
+    return false;
+  }
+
+  var req = new XMLHttpRequest();
+  req.open('GET', url);
+  req.onload = function(response) {
+    if (req.status == 200) {
+      var containerElements = document.querySelectorAll('.container');
+      if (containerElements) {
+        for (var i = 0; i < containerElements.length; i++) {
+          containerElements[i].classList.add('old');
+        }
+      }
+      var div = document.createElement("div");
+      div.innerHTML = req.response;
+      injectNode.call(div.querySelector('.container'));
+      div.innerHTML = '';
+      !preserveState && history.pushState({'container': container}, '', url);
+    }
+  };
+  // Make the request
+  req.send();
+  return false;
+};
+
+var onNavClick = function(event) {
+
+  event.preventDefault();
+  var self = this;
+
+  if (this.classList.contains('current')) {
+    return;
+  }
+
+  onPressHeader.call(document.querySelector('h1'));
+  var navLinks = document.querySelectorAll("nav .nav-item");
+  for (var i = 0; i < navLinks.length; i++) {
+    navLinks[i].classList.remove('current');
+  }
+  self.classList.add('current');
+
+  return navigate(this.getAttribute('href'), this.dataset.container);
+}
+
+window.addEventListener("popstate", function(event) {
+
+  var container = event.state && event.state.container || 'about';
+  var links = document.querySelectorAll('.nav-item');
+  for (var i = 0; i < links.length; i++)
+  {
+    links[i].classList.remove('current');
+  }
+  var currentLink = document.querySelector('.nav-item[data-container='+container+']');
+  currentLink.classList.add('current');
+  navigate(document.location.href, container, true);
+});
+
 window.addEventListener("load", function(event) {
 
   logCRP();
 
-  //var onLoadCss = function() {
-    document.querySelector(".description").classList.add('visible');
-    var message = document.getElementById('message');
-    var welcome = document.getElementById('welcome');
-    var messageString = message.innerHTML;
-    for (var i = 0, len = messageString.length; i < len; i++) {
-      if (messageString[i] === ' ')
-      {
-        welcome.innerHTML += ' ';
-      }
-      else 
-      {
-        welcome.innerHTML += '<span class="hello-letter">'+messageString[i]+'</span>';
-        welcome.querySelector('.hello-letter:last-child').style.animationDelay = (i * 200) + 'ms';
-      }
-    }
+  var container = document.querySelector(".container").getAttribute('id');
+  onFirstLoad[container]();
 
-    var onPressHeader = function() {
-       this.classList.toggle('expanded');
-       document.querySelector("nav").classList.toggle('expanded');
-    };
+  var header = document.querySelector("h1");
+  header.addEventListener("click", onPressHeader);
 
-    var onNavigated = function(event) {
-        var old = document.getElementById('old');
-        old.parentNode.removeChild(old);
-        this.setAttribute('id', '');
-        this.classList.remove('animated');
-    };
+  var navLinks = document.querySelectorAll("nav .nav-item");
+  for (var i = 0; i < navLinks.length; i++) {
+    navLinks[i].addEventListener('click', onNavClick);
+  }
 
-    var onNavClick = function(event) {
-      event.preventDefault();
-
-      if (this.classList.contains('current')){
-        return;
-      }
-
-      var self = this;      
-      var req = new XMLHttpRequest();
-      req.open('GET', this.getAttribute('href'));
-      req.onload = function(response) {
-        if (req.status == 200) {
-          var navLinks = document.querySelectorAll("nav .nav-item");
-          for (var i = 0; i < navLinks.length; i++) {
-            navLinks[i].classList.remove('current');
-          }
-          self.classList.add('current');
-          onPressHeader.call(document.querySelector('h1'));
-          document.querySelector('.container').setAttribute('id', 'old');
-          var div = document.createElement("div");
-          div.innerHTML = req.response;
-          var innerContainer = div.querySelector('.container');
-          var className = innerContainer.className;
-          div.innerHTML = innerContainer.innerHTML;
-          div.className = className;
-          div.setAttribute('id', 'new');
-          document.querySelector("body").appendChild(div);
-          void div.offsetWidth;
-          div.classList.add('animated');
-          div.addEventListener("transitionend", onNavigated, false);
-        }
-      };
-      // Make the request
-      req.send();
-      return false;
-    }
-
-    var header = document.querySelector("h1");
-    header.addEventListener("click", onPressHeader);
-
-    var navLinks = document.querySelectorAll("nav .nav-item");
-    for (var i = 0; i < navLinks.length; i++) {
-      navLinks[i].addEventListener('click', onNavClick);
-    }
-  //};
 
 });

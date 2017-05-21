@@ -28,14 +28,13 @@ body {
   font-size: 14px;
   line-height: 1.61;
   font-weight: 400;
-  min-height: 100%;
   height: 100%;
 }
 
 header {
   background-color: rgba(0,0,0,0.7);
   color: #fff;
-  height: 72px;
+  height: 74px;
   line-height: 72px;
   position: absolute;
   padding: 0;
@@ -44,77 +43,99 @@ header {
   z-index: 10;
 }
 
-footer 
-{
-  margin: 0 auto;
-}
-
 .container
 {
-  height: 100%;
-  padding-bottom: 40px;
+  min-height: 100%;
+  height: auto !important;
+  margin-bottom: -40px;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-attachment: fixed;
-  background-position: center; 
+  background-position: center;
+  padding-top: 74px;
 }
 
-#new 
+.new 
 {
   position: fixed;
   top: 0px;
   width: 100%;
 }
 
-#new.experience
+#about.new
+{
+  transform: translateX(-50%) rotateY(90deg) translateX(50%);
+  transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+#about.new.animated
+{
+  transform: translateX(-50%) rotateY(0deg) translateX(50%);
+}
+
+#experience.new
 {
   transform: translateX(100%);
   transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-#new.experience.animated
+#experience.new.animated
 {
   transform: translateX(0);
 }
 
-#new.courses
+#courses.new
 {
   opacity: 0;
   transition: opacity 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-#new.courses.animated
+#courses.new.animated
 {
   opacity: 1;
 }
 
-.hero { 
-  padding: 2em; 
-  font-size:1.4em;
-  font-weight: bold;
-  text-align: center;
+#portfolio.new
+{
+  transform: translateX(-50%) translateY(-50%) rotateZ(-90deg) translateX(50%) translateY(50%);
+  transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-.hello 
+#portfolio.new.animated
+{
+  transform: translateX(-50%) translateY(-50%) rotateZ(0) translateX(50%) translateY(50%);
+}
+
+#hello 
 {
     font-weight: bold;
     font-size: 40px;
     text-align: center;
     padding-top: 130px;
     line-height: normal;
+    visibility: hidden;
+}
+
+#hello.visible
+{
+  visibility: visible;
 }
 
 footer {
   padding: 0 0.5em;
+  position: relative;
   border-top: 1px solid #ccc;
-  position: absolute;
-  bottom: 0;
   height: 40px;
   width: 100%;
   line-height: 39px;
   z-index: 2;
+}
+
+.push 
+{
+  height: 40px;
 }
 
 #crp-stats 
@@ -136,6 +157,12 @@ h1
     width: 80%;
 }
 
+h2 {
+  padding-left: 10px;
+  text-align: center;
+  font-size: 25px;
+}
+
 .photoImg { 
   border-radius: 40px; 
   padding-left: 5px; 
@@ -150,11 +177,20 @@ h1
 
 nav 
 {
-  background-color: rgba(0,0,0,0.7);
   overflow: hidden;
-  padding-top: 5px;
   position: absolute;
-  z-index: 1;  
+  z-index: 1;
+}
+
+@keyframes nav-item-movement
+{
+  from {
+    transform: rotate(-6deg) translateY(3px);
+  }
+
+  to {
+    transform: rotate(6deg) translateY(3px);
+  }
 }
 
 .nav-item
@@ -173,6 +209,14 @@ nav
     transform: translateY(4px);
 }
 
+.nav-item:hover .nav-icon
+{
+  animation-duration: 0.08s;
+  animation-name: nav-item-movement;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;  
+}
+
 #header-toggle
 {
   display: none;
@@ -180,8 +224,13 @@ nav
 
 .description 
 {
-  transition: opacity 2s 4s;
+  padding: 2em;
+  font-size:1.4em;
+  font-weight: bold;
+  text-align: center;
   opacity: 0;
+  transition: opacity 2s 4s;
+  display: none;
 }
 
 .description.visible 
@@ -209,25 +258,69 @@ nav
     visibility: hidden;
 }
 
-
-#message
-{
-  display: none;
+ul.container-items {
+    list-style-type: none;
+    padding-left: 0;
 }
 
+.container-heading
+{
+  padding-top: 10px;
+}
+
+.container-title
+{
+  margin: 0;
+}
+
+.container-item
+{
+  background: rgba(0,0,0, 0.55);
+  margin: 10px;
+  padding: 0 10px;
+  position: relative;
+  min-height: 145px;
+}
+
+.container-description
+{
+  padding: 15px 0;
+}
 
 @media only screen and (max-width: 1023px)
 {
+
+  .container-title
+  {
+    font-size: 18px;
+    line-height: 25px;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  .container-heading
+  {
+    height: 108px;
+    line-height: 108px;
+    position: relative;
+  }
+
+
+  nav
+  {
+    background-color: rgba(0,0,0,0.7);
+  }
+  
   #header-toggle 
   {
     display: block;
     font-size: 30px !important;
     position: absolute;
-    right: 0;
+    right: 10px;
     text-align: center;
     transition: transform 0.5s linear;
     top: 21px;
-    width: 20%;
+    width: 30px;
   }
 
   #header-toggle.expanded
@@ -252,10 +345,47 @@ nav
       font-size: 28px !important;
       width: 100%;
   }
+
+  .container-photo 
+  {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15%;
+  }
+
+  .container-heading
+  {
+    position: static;
+    height: auto;
+    line-height: normal;
+  }
+
+  .container-title 
+  {
+    width: 100%;
+  }
+
 }
 
 /* Smartphones (portrait) */
 @media only screen and (max-width: 480px) {
+
+  .container-photo
+  {
+    width: 18%;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .container-title
+  {
+    padding-left: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    width: 80%;
+  }
+
   body 
   { 
     font-size: 12px;
@@ -266,9 +396,9 @@ nav
     background-image: url('../img/hello-small.jpg');
   }
 
-  .container.experience
+  #experience.container
   {
-    background-image: url('../img/adventure-small.jpg');
+    background-image: url('../img/hello-small.jpg');
   }
 
   nav 
@@ -277,6 +407,7 @@ nav
     line-height: 35px;
     transition: visibility 0s, height 1s;
     width: 100%;
+    top: 74px;
   }
 
   nav.expanded
@@ -302,6 +433,16 @@ nav
 
 @media only screen and (min-width: 481px) and (max-width: 1023px) {
 
+  .container-title 
+  {
+    padding-left: calc(15% + 10px);
+  }
+
+  .container-description 
+  {
+    padding-left: calc(15% + 10px);
+  }
+
   .container
   {
     background-image: url('../img/hello-medium.jpg');
@@ -313,6 +454,7 @@ nav
       height: 0;
       width: 100%;
       line-height: 28px;
+      top: 74px;
   }
 
   nav.expanded
@@ -330,6 +472,27 @@ nav
 
 @media only screen and (min-width: 1024px) 
 {
+
+  .container-title
+  {
+    padding-left: 160px;
+    line-height: 35px;
+    font-size: 25px;
+    vertical-align: middle;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .container-photo
+  {
+    width: 150px;
+  }
+
+  .container-description 
+  {
+    padding-left: 160px;
+  }
+
   .container
   {
       background-image: url('../img/hello-large.jpg');
@@ -337,16 +500,17 @@ nav
 
   nav 
   {
-      height: 80px;
-      line-height: 28px;
-      width: 500px;
-      top: 0;
-      right: 0;
+    height: 74px;
+    line-height: 28px;
+    width: 500px;
+    top: 0;
+    right: 0;
   }
 
   .nav-item
   {
-      padding: 4px;
+    border-top: none;
+    padding: 6px;
   }
 }
 
