@@ -24,7 +24,7 @@ WebFontConfig = {
   var link = d.createElement('link');
   link.type = "text/css";
   link.rel = "stylesheet"
-  link.href = "css/style.css";
+  link.href = "css/style.min.css";
   //link.addEventListener("load", onLoadCss);
   head.appendChild(link);
 })(document);
